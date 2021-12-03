@@ -1,2 +1,2 @@
 # Kargo-Dağıtım-Sistemi
-Kargo Dağıtım Sistemi
+Kargo Dağıtım Sistemi olarak isimlendirilen bu proje de akıllı kargo dağıtım sistemi oluşturulma hedeflenmiştir. Programa giriş kullanıcı adı ve şifresi ile sağlanmaktadır. Kargoların adreslerini harita üzerinde göstereceğimiz Google Maps API dahil edilmiştir, kargoların ve kullanıcı bilgilerinin tutulduğu FireBase platformu üzerinde veritabanı  oluşturulmuştur. Harita üzerinde kargo  dağıtımı yapan kuryenin başlangıç  konumunu ve yine harita üzerinde  gösterilen kargo konumlarına ulaşabileceği  ve tekrar başlangıçta bulunduğu konuma  geri dönmesini en kısa yol algoritması kullanılarak sağlanması hedeflenmiştir. 
