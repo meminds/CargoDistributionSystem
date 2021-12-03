@@ -1,0 +1,39 @@
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    margin: auto;
+    max-width: 38rem;
+    padding: 2rem;
+  
+  }
+ .container {
+    padding: auto;
+  }
+  .container input {
+    display: block;
+    border-radius: 5%;
+    border: 1px 10px 10px 0.5;
+    margin-top: 10px;
+    margin-bottom: 10px;
+
+  }
+  .left-side{
+      display: inline;
+      overflow: hidden;
+      float: left;
+      padding: 50px;
+    
+  }
+  .list-container{
+    float: left;
+      display: inline;
+      overflow: hidden;
+      padding-right: 10px;
+  }
+  .containeriki{
+    display:block;
+    float: none;
+  }
+  button{
+    display: block;
+    float:none ;
+  }

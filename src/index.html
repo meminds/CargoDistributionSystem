@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Maps Demo</title>
+
+</head>
+
+<body>
+
+  <div id="googleMap" style="width:100%;height:400px;"></div>
+  </div>
+  <div class="btn-group" role="group" aria-label="Basic mixed styles example" style="display: inline;">
+    <button type="button" class="btn btn-primary" id="hareket">Hareket et </button>   
+  </div>
+
+  <script>
+    const electron = require('electron');
+    const { ipcRenderer } = electron;
+
+
+
+   
+    var tempDataiki=[];
+    var arrDistance=[];
+    var dataWithoutKargo=[];
+    var dataOutKargoWorks=[];
+    var map;
+    var temp;
+    var directionsService;
+    var directionsRenderer;
+
+
+
+    function myMap() {
+      directionsService = new google.maps.DirectionsService();
+      directionsRenderer = new google.maps.DirectionsRenderer();
+      map = new google.maps.Map(document.getElementById("googleMap"), {
+        zoom: 12,
+        center: { lat: 40.7673, lng: 29.9383 },
+      });
+      directionsRenderer.setMap(map);
+      //calculateAndDisplayRoute(directionsService, directionsRenderer);
+      // Set LatLng and title text for the markers. The first marker (Boynton Pass)
+      // receives the initial focus when tab is pressed. Use arrow keys to
+      // move between markers; press tab again to cycle through the map controls.
+      google.maps.event.addListener(map, 'click', function (event) {
+        placeMarker(event.latLng);
+      });
+      //Sorunla karşılaşırsan parantezlerin dizilimine dikkat et 
+      /*var markerCenter = new google.maps.Marker({
+            position:{ lat: 40.7673, lng:  29.9383 },
+            map:map
+          })*/
+
+      ipcCall();
+      
+
+
+
+
+    }
+
+
+
+
+    function placeMarker(location) {
+      var marker = new google.maps.Marker({
+        position: location,
+        map: map
+      });
+      var infowindow = new google.maps.InfoWindow({
+        content: 'Latitude: ' + location.lat() +
+          '<br>Longitude: ' + location.lng()
+      });
+      ipcRenderer.send("key:latlng", location.lat(), location.lng());
+      infowindow.open(map, marker);
+    }
+
+
+    function addMarker(data) {
+      const image = "../assets/motor.png"
+      for (i = 0; i < data.length; i++) {
+
+        if (data[i].durum == -1) {
+          const image = "../assets/motor.png";
+          var marker3 = new google.maps.Marker({
+            position: { lat: parseFloat(data[i].coords.lat), lng: parseFloat(data[i].coords.long) },
+            map: map,
+            icon: image
+          });
+        }
+
+        else if(data[i].durum ==0) {
+          var marker2 = new google.maps.Marker({
+            position: { lat: parseFloat(data[i].coords.lat), lng: parseFloat(data[i].coords.long) },
+            map: map
+          });
+
+        }
+
+      }
+
+    }
+    /*
+      for(){
+        calculateAndDisplay(direction service ,, datai , datai)
+      }
+    */
+    function calculateAndDisplayRoute(directionsService, directionsRenderer,data1,data2) {
+      directionsService
+        .route({
+          origin: {
+            lat: parseFloat(data1.coords.lat), lng: parseFloat(data1.coords.long)
+          },
+          destination: {
+            lat: parseFloat(data2.coords.lat), lng: parseFloat(data2.coords.long)
+          },
+          travelMode: google.maps.TravelMode.DRIVING,
+        },function(response, status) {
+        if (status === google.maps.DirectionsStatus.OK) {
+          //directionsRenderer.setDirections(response);
+          var directionsData = response.routes[0].legs[0];
+          if (!directionsData) {
+            window.alert('Directions request failed');
+            return;
+          }
+          else {
+            console.log(" Driving distance is " + directionsData.distance.text + " (" + directionsData.duration.text + ").");
+            arrDistance.push(directionsData.distance.text);
+          }
+        } else if (status === google.maps.DirectionsStatus.OVER_QUERY_LIMIT) {
+            delayFactor++;
+            setTimeout(function () {
+                calculateAndDisplayRoute(directionsService,directionsRenderer,data1,data2);
+            }, delayFactor * 1000);
+        } else {
+            console.log("Route: " + status);
+        }
+      });
+      
+       
+    }
+
+    function ipcCall() {
+      ipcRenderer.on("key:markers", (err, data) => {
+        console.log(data);
+        addMarker(data);
+        routeCalculator(data);
+        
+        console.log("calistim");
+      });
+    }
+
+    function routeCalculator(data){
+      var dataKargo;
+
+      for(i = 0 ; i <data.length ; i++)
+      {
+          if(data[i].durum==-1){
+            dataKargo=data[i];
+          }   
+          else{
+            dataWithoutKargo.push(data[i]);
+          }
+        
+      }
+      for(j = 0 ; j <dataWithoutKargo.length ; j++){
+          calculateAndDisplayRoute(directionsService,directionsRenderer,dataKargo,dataWithoutKargo[j]);
+        
+       
+      }
+      
+     
+     
+        arrayMove(arrDistance,data,dataOutKargoWorks);
+
+
+      
+    }
+
+
+
+    function displayRoute(directionsService, directionsRenderer,data1) {
+      console.log(dataWithoutKargo);
+      var originlat = data1.coords.lat;
+      var originlong = data1.coords.long;
+      console.log(temp);
+      var destlat = dataWithoutKargo[temp].coords.lat;
+      var destlong = dataWithoutKargo[temp].coords.long;
+      directionsService
+        .route({
+          origin: {
+            lat: parseFloat(originlat), lng: parseFloat(originlong)
+          },
+          destination: {
+            lat: parseFloat(destlat), lng: parseFloat(destlong)
+          },
+          travelMode: google.maps.TravelMode.DRIVING,
+        })
+        .then((response) => {
+          directionsRenderer.setDirections(response);
+          var directionsData = response.routes[0].legs[0]; // Get data about the mapped route
+          if (!directionsData) {
+            window.alert('Directions request failed');
+            return;
+          }
+          else {
+            console.log(" Driving distance is " + directionsData.distance.text + " (" + directionsData.duration.text + ").");
+          }
+        })
+        .catch((e) => window.alert("Directions request failed due to " + status));
+    }
+
+function  arrayMove(arrDistance,data,dataOutKargo){
+  
+               
+               var tempi;
+               var tempData=arrDistance[0];
+              for(i=0 ; i<dataOutKargo.length;i++){
+                      if(arrDistance[i]<tempData){
+                        temp =i;
+                      }
+              }
+              for(i =0; i<data.length;i++){
+                if(data[i].durum==-1){
+                  tempi=i;
+                  displayRoute(directionsService,directionsRenderer,data[tempi]);
+                  data[i].durum=1;
+                //  data[temp].durum=-1;
+                  }
+                  if(data[i]==dataOutKargo[temp]){
+                    data[i].durum=-1;
+                  }
+              }
+              
+              console.log(data);
+              for(i=0 ; i< data.length;i++){
+                tempDataiki.push(data[i]);
+              }
+
+             
+
+}
+
+let hareketBtn = document.querySelector("#hareket");
+
+hareketBtn.addEventListener("click" , () => {
+    ipcRenderer.send("key:hareket",tempDataiki);
+  console.log(tempDataiki);
+})
+
+  </script>
+
+  <script async defer
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyApHn585_KU0XIWnH7ZM5BjG5ILhCVDSHI&callback=myMap"></script>
+</body>
+
+</html>

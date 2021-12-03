@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Document</title>
+    <link rel="stylesheet" href="assets/css/bootstrap.min.css">
+    <meta http-equiv="refresh" content="30">
+</head>
+<body>
+    <div class="container">
+        <div><p>Kullanıcı Adı : </p></div>
+        <div class="input-group mb-3">
+            <input type="text"  placeholder="Username" id="username" >
+          </div>
+          <br>
+          <div><p>Şifre</p></div>
+          <div class="input-group mb-3">
+            <input type="text" placeholder="Password" id="password" >
+          </div>
+          <br>
+          <div class="btn-group" role="group" aria-label="Basic mixed styles example" style="display: inline;">
+            <button type="button" class="btn btn-primary" id="login">Giriş Yap</button>   
+          </div>
+          <div class="btn-group" role="group" aria-label="Basic mixed styles example" style="display: inline;">
+            <button type="button" class="btn btn-primary" id="kayit">Kayıt Ol</button>   
+          </div>
+    </div>
+
+    <script>
+        const electron = require('electron');
+        const { ipcRenderer } = electron;
+
+        let username = document.querySelector("#username");
+        let password = document.querySelector("#password");
+        let loginBtn = document.querySelector("#login");
+        let kayitBtn = document.querySelector("#kayit");
+
+        loginBtn.addEventListener("click" , () => {
+            ipcRenderer.send("key:usernamepass",username.value,password.value)
+        
+        } )
+      
+
+        kayitBtn.addEventListener("click" ,() => {
+             ipcRenderer.send("key:regUsernamePass",username.value,password.value)
+        })
+  
+        
+        
+
+
+
+
+    </script>
+    
+</body>
+</html>

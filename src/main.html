@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Maps Demo</title>
+    <link rel="stylesheet" href="main.css">
+    
+</head>
+
+<body>
+    <div class="container">
+        <div class="left-side">
+            <input type="number" name="number_input" id="lat" placeholder="lat">
+            <input type="number" name="number_input2" id="long" placeholder="long">
+            <button type="button" id="kargoGirisi">Yeni Kargo Girişi</button>
+        </div>
+        <div class="list-container">
+            <div id="kargo0"></div>
+            <div id="kargo1"></div>
+            <div id="kargo2"></div>
+            <div id="kargo3"></div>
+            <div id="kargo4"></div>
+            <div id="kargo5"></div>
+            <div id="kargo6"></div>
+            <div id="kargo7"></div>
+            <div id="kargo8"></div>
+            <div id="kargo9"></div>
+
+        </div>
+        <div class="containeriki">
+            <input type="text" name="number_input4" id="username" placeholder="Username">
+            <input type="text" name="number_input4" id="oldPass" placeholder="Username">
+            <input type="text" name="number_input4" id="newPass" placeholder="Yeni Şifreniz">
+            <button type="button" id="changePass">Şifreyi Değiştir</button>
+        </div>
+
+    </div>
+
+
+
+
+
+    <script>
+        const electron = require('electron');
+        const { ipcRenderer } = electron;
+
+        var latKargo = document.querySelector('#lat');
+        var longKargo = document.querySelector('#long');
+        var addKargo = document.querySelector('#kargoGirisi');
+        var oldUser = document.querySelector('#username');
+        var oldPass = document.querySelector('#oldPass');
+        var newPass = document.querySelector('#newPass');
+        var changePass = document.querySelector('#changePass');
+
+        changePass.addEventListener("click", () => {
+            ipcRenderer.send("newpass", oldUser.value,oldPass.value, newPass.value);
+        })
+
+        addKargo.addEventListener("click", () => {
+            ipcRenderer.send("key:kargolocation", latKargo.value, longKargo.value);
+        })
+        
+       
+   ipcRenderer.on("key:markers" ,(err,data)=>{
+       var j;
+       
+           var x = "", i;
+        for (i = 0; i < data.length; i++) {
+            x = "Kargo Lat: " + data[i].coords.lat +  " Kargo Long: " + data[i].coords.long+ "  Kargo Durumu: " + data[i].durum;
+            document.getElementById("kargo"+i).innerHTML ="<h4>"+x+"</h4>"+"<button type=button id=sil"+i+">Sil</button>"
+        }
+        smth(data);
+   });
+   
+    
+   function smth(dataHere){
+    for(i=0;i<dataHere.length;i++){
+        var sendThisLat = dataHere[i].coords.lat;
+        var sendThisLong = dataHere[i].coords.long;
+        document.getElementById("sil"+i).addEventListener("click",() =>{
+           
+            ipcRenderer.send("key:kargodelete",sendThisLat,sendThisLong)
+   })
+    }
+   }
+  
+
+    
+
+
+       
+    </script>
+
+
+
+</body>
+
+</html>
