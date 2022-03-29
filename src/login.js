@@ -17,7 +17,7 @@ const { getFirestore , collection, addDoc ,doc,getDocs,onSnapshot,updateDoc,dele
 
 
 const firebaseApp = initializeApp({
-  apiKey: 'AIzaSyChMr-fShkun_nK9K-ZMRtnrBIRy273EqI',
+  apiKey: '',
   authDomain: 'demomap-329008.firebaseapp.com',
   projectId: 'demomap-329008'
 });
